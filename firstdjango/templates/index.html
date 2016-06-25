@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load myfilters %}
+
+{% block title %}首页{% endblock %}
+
+{% block extrahead %}
+	<link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="web-name">车溪</h1>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-9">
+          {% for eachblog in blog_list %}
+          <div class="article-item">
+                <div class="article-info">
+                    <h3 class="article-title" title="{{ eachblog.title }}"><a href="{% url 'item_detail' id=eachblog.id %}">{{ eachblog.title }}</a></h3><br>
+                    <div class="each-article-info">
+                        <p class="pull-right" title="更新日期">
+                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{ eachblog.update_date }}&nbsp;&nbsp;
+                        </p>
+                        <p class="pull-right" title="发表日期">
+                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{ eachblog.publication_date }}&nbsp;&nbsp;
+                        </p>
+                        <p class="pull-right" title="阅读人数">
+                            <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> {{ eachblog.view_number }}&nbsp;&nbsp;&nbsp;&nbsp;
+                        </p>
+                        <p class="pull-right" title="标签">
+                            <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>{{ eachblog.first_tag }}&nbsp;&nbsp;{{ eachblog.tag_supplement }}&nbsp;&nbsp;
+                        </p>
+                    </div><br>
+                </div><br>
+                <div class="summary">
+                  {% autoescape off %}
+                  <a href="{% url 'item_detail' id=eachblog.id %}">{{ eachblog.content_html|truncatechars_html:100 }}</a>
+                  {% endautoescape %}
+                </div>
+          </div><br>
+          {% endfor %}
+          <nav>
+            <ul class="pager">
+              <li class="current">{{ blog_list.number  }} / {{ blog_list.paginator.num_pages  }}</li>
+              {% if blog_list.has_previous %}
+              <li class="previous"><a href="?page={{ object_list.previous_page_number  }}"><span aria-hidden="true">&larr;</span> 上一页</a></li>
+              {% else %}
+              <li class="previous disabled"><a href=""><span aria-hidden="true">&larr;</span> 上一页</a></li>
+              {% endif %}
+              {% if blog_list.has_next %}
+              <li class="next"><a href="?page={{ object_list.next_page_number  }}">下一页 <span aria-hidden="true">&rarr;</span></a></li>
+              {% else %}
+              <li class="next disabled"><a href="">下一页 <span aria-hidden="true">&rarr;</span></a></li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+        <div class="col-md-3">
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,71 @@
+{% load staticfiles %}
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="python, django">
+        <!-- css -->
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/blog-base.css' %}">
+        <link rel="stylesheet" href="http://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="{% static 'assets/css/form-elements.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+
+        <!-- script -->
+        <script src="{% static 'javascripts/jquery-2.2.1.js' %}"></script>
+        <script src="{% static 'javascripts/inventory/blog-base.js'%}"></script>
+        <script src="{% static 'javascripts/bootstrap.min.js' %}"></script>
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="{% static 'assets/ico/Blue_and_Yellow_Macaw_by_Fuzzco-16s.png' %}">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'assets/ico/Blue_and_Yellow_Macaw_by_Fuzzco-144s.png' %}">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'assets/ico/Blue_and_Yellow_Macaw_by_Fuzzco-114s.png' %}">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'assets/ico/Blue_and_Yellow_Macaw_by_Fuzzco-72s.png' %}">
+        <link rel="apple-touch-icon-precomposed" href="{% static 'assets/ico/Blue_and_Yellow_Macaw_by_Fuzzco-57s.png' %}">
+
+
+        <title>{% block title %}{% endblock %}| 车溪</title>
+        {% block extrahead %}{% endblock %}
+    </head>
+
+    <body>
+
+        <!--页面头部导航-->
+        {% block navbar %}
+            {% include "inventory/blog_navbar.html" %}
+        {% endblock %}
+        <!--页面主体内容-->
+        <div class="main-body">
+
+            {% block content %}{% endblock %}
+
+        </div>
+
+        <!--页面最底部-->
+        {% block footer %}
+            {% include "inventory/footer.html" %}
+        {% endblock %}
+        <!--回到页面顶部-->
+        <a id="scrollUp" href="#top" style="position: fixed; z-index: 2147483647;"><i class="fa fa-angle-up"></i></a>
+
+        <!-- Javascript -->
+        <script src="{% static 'assets/js/jquery-1.11.1.min.js' %}"></script>
+        <script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'assets/js/jquery.backstretch.min.js' %}"></script>
+        <script src="{% static 'assets/js/scripts.js' %}"></script>
+
+        <!--[if lt IE 10]>
+            <script src="{% static 'assets/js/placeholder.js' %}"></script>
+        <![endif]-->
+
+        {% block script %}{% endblock %}
+
+    </body>
+</html>
+

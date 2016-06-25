@@ -1,0 +1,114 @@
+<!-- Collect the nav links, forms, and other content for toggling -->
+<nav class="navbar navbar-default navbar-fixed-top blog-navbar">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{% url 'home'%}">车溪</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class=""><a href="{% url 'home'%}">首页<span class="sr-only">(current)</span></a></li>
+
+      </ul>
+
+      <form class="navbar-form navbar-left" role="search" id="searchform" action="{% url 'item_search' %}" method="get" accept-charset="utf-8">
+        <div class="form-group">
+          <input type="text" class="form-control" id="searchbox" name="q" placeholder="请输入搜索内容">
+        </div>
+        <button type="submit" class="btn btn-default btn-info">搜索</button>
+      </form>
+
+
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">python <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'item_categories' tag='python' %}">python学习笔记</a></li>
+            <li><a href="{% url 'item_categories' tag='Web-crawler' %}">python爬虫</a></li>
+            <li><a href="{% url 'item_categories' tag='data-analysis' %}">python数据分析</a></li>
+            <li><a href="{% url 'item_categories' tag='machine-learning' %}">机器学习</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="{% url 'item_categories' tag='django' %}">django学习笔记</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">python学习优质网站</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">web <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'item_categories' tag='javascript' %}">javascript</a></li>
+            <li><a href="{% url 'item_categories' tag='html&css' %}">html&css</a></li>
+            <li><a href="{% url 'item_categories' tag='jquery' %}">jquery</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">优质网页</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">java <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'item_categories' tag='java' %}">java学习笔记</a></li>
+            <li><a href="{% url 'item_categories' tag='php' %}">php</a></li>
+            <li><a href="{% url 'item_categories' tag='c' %}">c</a></li>
+            <li><a href="#">Something else about java</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Java学习相关网站</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">数据库与git <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'item_categories' tag='mysql' %}">MYSQL</a></li>
+            <li><a href="{% url 'item_categories' tag='redis' %}">redis</a></li>
+            <li><a href="{% url 'item_categories' tag='git' %}">git</a> </li>
+            <li><a href="#">Something else about it</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">相关站点</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">绘画 <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'item_categories' tag='php' %}">绘画</a></li>
+            <li><a href="#">Something else about drawing</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">绘画相关网站</a></li>
+          </ul>
+        </li>
+        <li><a href="{% url 'about' %}">关于</a></li>
+        <!--<li><a href="{% url 'webhistory' %}">网站历史</a></li>-->
+        <li class="dropdown">
+          <a {% if user.is_authenticated %} href="{% url 'user-profile' %}" {% else %} href="#" {% endif %} class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">个人中心<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'change_password' %}">修改密码</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="{% url 'change_username' %}">修改用户名</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="{% url 'logout' %}">退出</a></li>
+            {% else %}
+            <li><a href="{% url 'user-login' %}">登录</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="{% url 'register' %}">注册</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="{% url 'forget_password' %}">忘记密码</a></li>
+            <li role="separator" class="divider"></li>
+            {% endif %}
+
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<script>
+    $('li.dropdown').mouseover(function() {
+       $(this).addClass('open');    }).mouseout(function() {        $(this).removeClass('open');    }); /* 导航鼠标悬停*/
+</script>

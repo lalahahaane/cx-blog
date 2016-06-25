@@ -1,0 +1,154 @@
+{% extends 'userprofile/profile_base.html' %}
+{% load staticfiles %}
+
+{% block title %}注册{% endblock %}
+
+{% block extrahead %}{% endblock %}
+
+{% block content %}
+
+{% if registered %}
+    <div style="padding-bottom:400px;">
+      <strong>谢谢注册！</strong>
+    <a href="{% url 'home' %}" style="color:white;">返回主页</a><br>
+    </div>
+{% else %}
+
+<div class="top-content">
+
+            <div class="inner-bg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-offset-2 text input-description">
+                            <h1><strong>车溪</strong> 注册</h1>
+                            <div class="description">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3 form-box">
+                        	<div class="form-top">
+                        		<div class="form-top-left">
+                        			<h3>Sign in our site</h3>
+                            		<p></p>
+                        		</div>
+                        		<div class="form-top-right">
+                        			<i class="fa fa-key"></i>
+                        		</div>
+                            </div>
+                            <div class="form-bottom">
+			                    <form role="form" action="" method="post" class="login-form" enctype="multipart/form-data">
+                                    {% csrf_token %}
+
+                                    <div class="form-group {% if user_form.username.errors %} has-error {% endif %}">
+                                        <label for="username" class="sr-only">{{ user_form.username.label }}</label>
+                                        {% if user_form.username.errors %}
+                                        <span class="text-danger pull-right">{{ user_form.username.errors }}</span>
+                                        {% endif %}
+                                        {{ user_form.username }}
+                                        <p class="text-muted">{{ user_form.username.help_text }}</p>
+                                    </div>
+
+                                    <div class="form-group {% if user_form.email.errors %} has-error {% endif %}">
+                                        <label for="email" class="sr-only">{{ user_form.email.label }}</label>
+                                        {% if user_form.email.errors %}
+                                        <span class="text-danger pull-right">{{ user_form.email.errors }}</span>
+                                        {% endif %}
+                                        {{ user_form.email }}
+                                        <p class="text-muted">{{ user_form.email.help_text }}</p>
+                                    </div>
+                                    <div class="form-group {% if user_form.password.errors %} has-error {% endif %}">
+                                        <label for="password" class="sr-only">{{ user_form.password.label }}</label>
+                                        {% if user_form.password.errors %}
+                                        <span class="text-danger pull-right">{{ user_form.password.errors }}</span>
+                                        {% endif %}
+                                        {{ user_form.password }}
+                                        <p class="text-muted">{{ user_form.password.help_text }}</p>
+                                    </div>
+
+                                    <div class="form-group {% if profile_form.picture.errors %} has-error {% endif %}">
+                                        <label for="picture" class="sr-only">{{ profile_form.picture.label }}</label>
+                                        {{ profile_form.picture }}
+                                        <p class="text-muted">{{ profile_form.picture.help_text }}</p>
+                                    </div><br>
+			                        <button type="submit" class="btn">注册</button>
+			                    </form>
+		                    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+<!--
+<div class="container">
+  <div class="register center-block ">
+    <div class="panel panel-default ">
+
+      <div class="panel-heading ">
+        <h3 class="panel-title text-center"><strong>注册</strong></h3>
+      </div>
+      <div class="panel-body ">
+        <form action="{% url 'register' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+          <div class="form-group {% if user_form.username.errors %} has-error {% endif %}">
+            <label for="username" class="sr-only">{{ user_form.username.label }}</label>
+            {% if user_form.username.errors %}
+            <span class="text-danger pull-right">{{ user_form.username.errors }}</span>
+            {% endif %}
+            {{ user_form.username }}
+            <p class="text-muted">{{ user_form.username.help_text }}</p>
+          </div>
+          <div class="form-group center-block input-group input-group-lg col-xs-4 {% if user_form.email.errors %} has-error {% endif %}">
+            <label for="email">{{ user_form.email.label }}</label>
+            {% if user_form.email.errors %}
+            <span class="text-danger pull-right">{{ user_form.email.errors }}</span>
+            {% endif %}
+            {{ user_form.email }}
+            <p class="text-muted">{{ user_form.email.help_text }}</p>
+          </div>
+          <div class="form-group center-block input-group input-group-lg col-xs-4 {% if user_form.password.errors %} has-error {% endif %}">
+            <label for="password">{{ user_form.password.label }}</label>
+            {% if user_form.password.errors %}
+            <span class="text-danger pull-right">{{ user_form.password.errors }}</span>
+            {% endif %}
+            {{ user_form.password }}
+            <p class="text-muted">{{ user_form.password.help_text }}</p>
+          </div>
+
+          <div class="form-group center-block input-group input-group-lg col-xs-4 {% if form.password2.errors %} has-error {% endif %}">
+            <label for="password2">{{ user_form.password2.label }}</label>
+            {% if user_form.password2.errors %}
+            <span class="text-danger pull-right">{{ user_form.password2.errors }}</span>
+            {% endif %}
+            {{ user_form.password2 }}
+            <p class="text-muted">{{ user_form.password2.help_text }}</p>
+          </div>
+
+          <div class="form-group center-block input-group input-group-lg col-xs-4 ">
+            <label for="picture">{{ profile_form.picture.label }}</label>
+            {{ profile_form.picture }}
+          </div><br>
+
+            <button type="submit" class="btn btn-default btn-lg btn-info pull-right" id="submit">注 册</button>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endif %}-->
+<!--
+<div class="form-group center-block input-group input-group-lg col-xs-4 " style="display:none;">
+            <label for="">{{ profile_form.width_field.label }}</label>
+            <span class="text-danger pull-right">{{ profile_form.width_field }}</span>
+          </div>
+          <div class="form-group center-block input-group input-group-lg col-xs-4 " style="display:none;">
+            <label for="">{{ profile_form.height_field.label }}</label>
+            <span class="text-danger pull-right">{{ profile_form.height_field }}</span>
+          </div>
+-->
+
+{% endblock %}

@@ -1,0 +1,28 @@
+.web-name,.article-title{
+    text-align:center;
+}
+
+/* 调整博客方框里的图片 */
+.summary img{
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    max-width: 10%;
+    height: auto;
+}
+
+/* 博客方框 */
+.article-item{
+    border-top: 1px solid #eaeaea;
+    border-left: 1px solid #eaeaea;
+    border-right: 1px solid #eaeaea;
+    border-bottom: 4px solid #eaeaea;
+}
+
+.article-info, .summary{
+    padding: 5px 15px 5px 15px;
+}
+
+.summary{
+    border-top: 5px solid #5c7edf;
+}

@@ -1,0 +1,95 @@
+{% extends 'userprofile/profile_base.html' %}
+{% load staticfiles %}
+{% load myfilters %}
+
+{% block title %}修改用户名{% endblock %}
+
+{% block extrahead %}{% endblock %}
+
+
+{% block content %}
+
+<div class="top-content">
+
+            <div class="inner-bg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-offset-2 text input-description">
+                            <h1><strong>车溪</strong> 修改用户名</h1>
+                            <div class="description">
+                                {% if user.is_authenticated %}
+                                <strong>hello <img src="{{ user|show_avatar }}" alt="用户头像" width="50px" height="50px"/>{{ user.username }}!</strong>
+                                {% else %}
+                                    <strong>hello world!</strong>
+                                {% endif %}
+                                {% if user_is_not_active %}
+                                <div class="alert alert-error">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    <span>您的账户不可用！</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3 form-box">
+                        	<div class="form-top">
+                        		<div class="form-top-left">
+                        			<h3>Change username in our site</h3>
+                            		<p></p>
+                        		</div>
+                        		<div class="form-top-right">
+                        			<i class="fa fa-key"></i>
+                        		</div>
+                            </div>
+                            <div class="form-bottom">
+			                    <form role="form" action="" method="post" class="login-form" enctype="multipart/form-data">
+                                    {% csrf_token %}
+
+                                    <div class="form-group {% if form.email.errors %} has-error {% endif %}">
+                                        <label for="email" class="sr-only">{{ form.email.label }}</label>
+                                        {% if form.email.errors %}
+                                        <span class="text-danger pull-right">{{ form.email.errors }}</span>
+                                        {% endif %}
+                                        {{ form.email }}
+                                        <p class="text-muted">{{ form.email.help_text }}</p>
+                                    </div>
+                                    <div class="form-group {% if form.oldusername.errors %} has-error {% endif %}">
+                                        <label for="oldusername" class="sr-only">{{ form.oldusername.label }}</label>
+                                        {% if form.oldusername.errors %}
+                                        <span class="text-danger pull-right">{{ form.oldusername.errors }}</span>
+                                        {% endif %}
+                                        {{ form.oldusername }}
+                                        <p class="text-muted">{{ form.oldusername.help_text }}</p>
+                                    </div>
+                                    <div class="form-group {% if form.newusername.errors %} has-error {% endif %}">
+                                        <label for="newusername" class="sr-only">{{ form.newusername.label }}</label>
+                                        {% if form.newusername.errors %}
+                                        <span class="text-danger pull-right">{{ form.newusername.errors }}</span>
+                                        {% endif %}
+                                        {{ form.newusername }}
+                                        <p class="text-muted">{{ form.newusername.help_text }}</p>
+                                    </div>
+
+                                    <br>
+			                        <button type="submit" class="btn">确认修改</button>
+			                    </form>
+		                    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+<!--
+    <div class="well">
+        <form class="form-horizontal" action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <p class="form-actions">
+                <input type="submit" value="确认修改" class="btn btn-primary">
+            </p>
+        </form>
+    </div>-->
+{% endblock %}

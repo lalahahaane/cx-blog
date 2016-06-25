@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load myfilters %}
+
+{% block title %}{{ item.title }}{% endblock%}
+
+{% block extrahead %}
+	<link rel="stylesheet" href="{% static 'textarea-auto-height/style.css' %}">
+	<link rel="stylesheet" href="{% static 'css/item_detail.css' %}">
+
+	<!--blog 目录-->
+    <link rel="stylesheet" href="http://yandex.st/highlightjs/6.2/styles/googlecode.min.css">
+    <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+
+{% endblock %}
+
+<!--页面主体开始-->
+{% block content %}
+
+<div class="blog">
+	<div class="blog-content" data-spy="scroll" data-target="#category">
+		<h1 class="blog-title">{{ item.title }}</h1><br><br>
+		<div>
+		    <p class="pull-left" title="标签">
+				<ul class="tags">
+				    {% for tg in item.first_tag|tag_str_to_list %}
+                    <li><a href="{% url 'item_categories' tag=tg %}" class="tag"><strong>{{ tg }}</strong></a></li>
+                    {% endfor %}
+                    <li><a href="#" class="tag"><strong>{{ item.tag_supplement }}</strong></a></li>
+                </ul>
+			</p>
+		</div>
+		<!--分享到微博、Google+、微信-->
+        <div>
+            <p class="">
+                <ul class="share-links">
+                    <li>
+                        <a class="btn" href='#'>
+        	                <img src="{% static 'images/qqzone-share.jpg' %}" alt="qq空间分享" title="分享到qq空间" width="32px" height="32px"/>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="btn" href='#'>
+	                        <img src="{% static 'images/google-plus-share.jpg' %}" alt="google+分享" title="分享到google+" width="32px" height="32px"/>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="btn" href='#'>
+        	                <img src="{% static 'images/facebook-share.jpg' %}" alt="facebook分享" title="分享到facebook" width="32px" height="32px"/>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="btn" href="#">
+        	                <img src="{% static 'images/weibo-share.jpg' %}" alt="微博分享" title="分享到微博" width="32px" height="32px"/>
+                        </a>
+                    </li>
+                    <!--
+                    <li>
+                        <a class="btn" href='#'>
+        	                <img src="{% static 'images/weixin-share.jpg' %}" alt="微信分享" title="分享到微信" width="32px" height="32px"/>
+                        </a>
+                    </li>
+                    -->
+                    <li>分享到</li>
+                </ul>
+            </p>
+
+        </div>
+		<br><hr>
+		<div class="blog-info">
+			<p class="pull-right" title="更新日期">
+				<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{ item.update_date }}&nbsp;&nbsp;
+			</p>
+			<p class="pull-right" title="发表日期">
+				<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{ item.publication_date }}&nbsp;&nbsp;
+			</p>
+			<p class="pull-left" title="阅读人数">
+				<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> {{ item.view_number }}&nbsp;&nbsp;&nbsp;&nbsp;
+			</p>
+		</div>
+		<br>
+		<br><br>
+        <!--blog正文-->
+		<div class="blog-content-main">
+			{% autoescape off %}
+			{{ item.content_html }}
+			{% endautoescape %}
+		</div>
+	</div>
+</div>
+<br><br>
+
+{% if user.is_superuser %}
+    <a class="btn btn-primary" href="{% url 'item_publish' %}" role="button">发布新文章</a>
+    <a class="btn btn-primary" href="{% url 'item_edit' id=item.id %}" role="button">编辑文章</a>
+{% endif %}
+
+<!--评论系统-->
+
+<!--提交评论处-->
+
+<div class="comment-input">
+	<div id="results" class="comment-input-warning"></div> <!-- 评论是否提交成功的信息errors go here -->
+    	<div class="comment-box " >
+
+    		{% csrf_token %}
+    		<div>
+    			<label for="comment-content-new-get"><span class="comment-box-label">请先<a href="{% url 'user-login' %}">登录</a>后评论</span>
+
+                	<a class="btn btn-link-1 btn-link-1-qq pull-right" href="{% url 'qqconnect' %}" target="_self" title="QQ 登录">
+                		<i class="fa fa-qq"></i> QQ &nbsp;登录
+                	</a>
+                	<a class="btn btn-link-1 btn-link-1-git pull-right" href="{% url 'gitconnect' %}" target="_self" title="github 登录">
+                		<i class="fa fa-github"></i> git &nbsp;登录
+                	</a>
+                	<a class="btn btn-link-1 btn-link-1-google-plus pull-right" href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.get_full_path }}"  title="google 登录">
+                		<i class="fa fa-google-plus"></i> Google &nbsp;登录
+                	</a>
+
+    			</label>
+
+    			<textarea class="comment-content-new-get form-control" id="comment-content-new-get" placeholder="请输入评论"></textarea>
+    		</div>
+    	</div>
+		<button class="btn btn-primary pull-right" id="comment-content-new-submit">提交评论</button>
+	</div>
+</div>
+<br><br><br><br><br>
+
+
+<!--显示旧评论-->
+<div class="comment-block col-md-9">
+{% if comment_list %}
+	{% for each_comment in comment_list %}
+
+		<div class="media" id='comment-list-{{ forloop.counter }}'>
+			<div class="media-left media-top">
+				<a href="{% url 'user-profile' %}" id="comment-picture-{{ forloop.counter }}">
+					{% if each_comment.comment_user %}
+					<img src="{{ each_comment.comment_user.picture.url }}" alt="用户头像" width="50px" height="50px">
+					{% else %}
+					<img src="{% static 'myexample.jpg' %}" alt="用户头像" width="50px" height="50px">
+					{% endif %}
+				</a>
+			</div>
+			<div class="media-body">
+				<h4 class="media-heading comment-heading" id="comment-username-{{ forloop.counter }}">
+					{% if each_comment.comment_user %}
+					<strong class="comment-username">{{ each_comment.comment_user.user.username }}</strong>
+					<span class="comment-date" id="comment-date-{{ forloop.counter }}">&nbsp;&nbsp;{{ each_comment.comment_date }}</span>
+					{% else %}
+					<strong class="comment-username">游客</strong>
+					<span class="comment-date" id="comment-date-{{ forloop.counter }}">&nbsp;&nbsp;{{ each_comment.comment_date }}</span>
+					{% endif %}
+					<strong class="pull-right" id="comment-num-{{ forloop.counter }}">{{ forloop.counter }}楼 </strong>
+				</h4><span class="pull-right replay-word" id="replay-word-{{ forloop.counter }}" data-num="{{ forloop.counter }}" data-username="{{ each_comment.comment_user.user.username }}"><br>回复</span>
+				<p id="comment-content-{{ forloop.counter }}">
+					{% autoescape on %}
+					{{ each_comment.comment_content }}
+					{% endautoescape %}
+				</p>
+			</div><div class="replay-box" id="replay-box-{{ forloop.counter }}"></div><hr>
+		</div>
+
+	{% endfor %}
+{% endif %}
+</div>
+
+<!--显示新评论-->
+<div class="comment-content-new-appear"></div><br>
+<!--页面主体结束-->
+{% endblock %}
+
+<!--页面主体右边开始-->
+{% block right %}
+
+<div class="blog-categories hidden-print hidden-xs hidden-sm" id="right-part-1">
+    <br><br><br><br>
+    <p class="right-categories-word" id="right-categories-1">目录</p>
+    <div id="category" class="nav"></div>
+</div>
+<br><br>
+<div class="tag-collection" id="right-part-2">
+    <p class="right-categories-word" id="right-categories-2">标签</p>
+    <p class="pull-left" title="标签">
+		<ul class="tags">
+            <li><a href="{% url 'item_categories' tag='python' %}" class="tag"><strong>python</strong></a></li>
+            <li><a href="{% url 'item_categories' tag='Web-crawler' %}" class="tag"><strong>Web-crawler</strong></a></li>
+            <li><a href="{% url 'item_categories' tag='Data-Science' %}" class="tag"><strong>Data-Science </strong></a></li>
+            <li><a href="{% url 'item_categories' tag='machine-learning' %}" class="tag"><strong>machine-learning</strong></a></li>
+            <li><a href="{% url 'item_categories' tag='django' %}" class="tag"><strong>django</strong></a></li>
+            <li><a href="{% url 'item_categories' tag='javascript' %}" class="tag"><strong>javascript</strong></a></li>
+            <li><a href="{% url 'item_categories' tag='html&css' %}" class="tag"><strong>html&css</strong></a></li>
+            <li><a href="{% url 'item_categories' tag='jquery' %}" class="tag"><strong>jquery</strong></a></li>
+            <li><a href="{% url 'item_categories' tag='java' %}" class="tag"><strong>java</strong></a></li>
+            <li><a href="{% url 'item_categories' tag='php' %}" class="tag"><strong>php</strong></a></li>
+            <li><a href="{% url 'item_categories' tag='c' %}" class="tag"><strong>c</strong></a></li>
+            <li><a href="{% url 'item_categories' tag='mysql' %}" class="tag"><strong>MYSQL</strong></a></li>
+            <li><a href="{% url 'item_categories' tag='redis' %}" class="tag"><strong>redis</strong></a></li>
+            <li><a href="{% url 'item_categories' tag='git' %}" class="tag"><strong>git</strong></a> </li>
+        </ul>
+	</p>
+</div>
+
+<!--页面主体右边结束-->
+{% endblock %}
+
+
+{% block script %}
+
+<script type="text/javascript">
+	$(document).ready(function() {
+
+	//点击回复
+	$(".replay-word").click(function(e){
+		var username = $(this).attr("data-username");
+		var id = $(this).attr("data-num");
+		var head = "回复"+id+"楼 @"+username+"\n";
+
+		$("#replay-box-"+id).prepend($(".comment-input"))
+		$("#comment-content-new-get").focus();
+		$("#comment-content-new-get").val(head);
+	});
+	$(".replay-word").mouseover(function(){
+		$(this).css("color", "black");
+	});
+	$(".replay-word").mouseout(function(){
+		$(this).css("color", "#aaa");
+	});
+
+
+	// textarea随高度自动伸缩
+	// https://github.com/alexdunphy/flexText
+	$(function () {
+    	$('#comment-content-new-get').flexText()
+	});
+
+    // AJAX POST 显示最新添加的评论
+    $('#comment-content-new-submit').click(function(){
+      console.log('am i called');
+
+        $.ajax({
+					type: "POST",
+					url: "{% url 'comment' id=item.id %}",/* "window.location.href+"comment/"{% url 'comment' id=item.id %}" */
+					dataType: "json",
+					data: { "comment-get": $(".comment-content-new-get").val() },
+
+					success: function(data){
+						console.log('发送成功');
+						$(".comment-content-new-get").val("");
+						$(".comment-content-new-appear").prepend(data.html);
+					    $("#results").css("display", "block").prepend(data.status);
+
+					},
+					error:function(data){
+						$("#results").css("display", "block").prepend(data.status);
+
+					}
+        		});
+    });
+
+    //blog 目录
+    $(".blog-content h2,.blog-content h3,.blog-content h4,.blog-content h5,.blog-content h6").each(function(i,item){
+            var tag = $(item).get(0).localName;
+            $(item).attr("id","wow"+i);
+
+            $("#category").append('<a class="new'+tag+'" href="#wow'+i+'" id="wow-jump'+i+'">'+$(this).text()+'</a></br>');
+            $(".newh2").css("margin-left",0);
+            $(".newh3").css("margin-left",20);
+            $(".newh4").css("margin-left",40);
+            $(".newh5").css("margin-left",60);
+            $(".newh6").css("margin-left",80);
+
+          });
+    // 控制右侧目录两个字是否显示
+    $("#category").each(function(){
+            var t = $(this).html();
+            if ( t.length != 0) {
+                $("#right-part-1").css("visibility","visible");
+            }
+          });
+
+
+// CSRF code
+    function getCookie(name) {
+        var cookieValue = null;
+        var i = 0;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (i; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        crossDomain: false, // obviates need for sameOrigin test
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+});
+
+</script>
+
+<!--blog 评论输入框高度自动伸缩-->
+<script src="{% static 'textarea-auto-height/jquery.flexText.js' %}"></script>
+
+<!--blog 目录-->
+<script>hljs.initHighlightingOnLoad();</script>
+
+{% endblock %}

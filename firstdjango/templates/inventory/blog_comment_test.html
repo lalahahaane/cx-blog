@@ -1,0 +1,38 @@
+{% load staticfiles %}
+
+
+<!--显示最新评论-->
+
+
+		<div class="media col-md-10" id='comment-list-add'>
+			<div class="media-left media-top">
+				<a href="{% url 'user-profile' %}" id="comment-picture-new">
+					{% if usercomment.comment_user %}
+					<img src="{{ usercomment.comment_user.picture.url }}/" alt="用户头像" width="44px" height="44px">
+					{% else %}
+					<img src="{% static 'myexample.jpg' %}" alt="用户头像" width="44px" height="44px">
+					{% endif %}
+				</a>
+			</div>
+
+			<div class="media-body" id="comment-new-media-body">
+				<h4 class="media-heading">
+					{% if usercomment.comment_user %}
+					{{ usercomment.comment_user.user.username}}
+					{% else %}
+					<p>游客</p>
+					{% endif %}
+					<strong>最新评论</strong><!--{ len(comment_list) }-->
+				</h4>
+				<p id="comment-content-new-appear">
+					{% autoescape on %}
+					{{ usercomment.comment_content }}
+					{% endautoescape %}
+				</p>
+			</div><hr><br><br>
+		</div>
+
+
+
+
+

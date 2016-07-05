@@ -55,8 +55,8 @@ class IndexListView(ListView):
 
     def get_context_data(self, **kwargs):
 
-        blog_list = Blogitem.objects.all().order_by(F('publication_date').desc())[:50] #按照文章的发布日期从晚到早排序
-        paginator = Paginator(blog_list, 10) #每一页显示十篇文章
+        blog_list_all = Blogitem.objects.all().order_by(F('publication_date').desc())[:50] #按照文章的发布日期从晚到早排序
+        paginator = Paginator(blog_list_all, 10) #每一页显示十篇文章
         page = self.request.GET.get('page')
         try:
             blog_list = paginator.page(page)
@@ -76,8 +76,8 @@ class CategoriesListView(ListView):
 
     def get_context_data(self, **kwargs):
         search_tag = self.kwargs.get('tag')
-        blog_list = Blogitem.objects.filter(first_tag__contains=search_tag).order_by(F('publication_date').desc())[:50]
-        paginator = Paginator(blog_list, 10)
+        blog_list_all = Blogitem.objects.filter(first_tag__contains=search_tag).order_by(F('publication_date').desc())[:50]
+        paginator = Paginator(blog_list_all, 10)
         page = self.request.GET.get('page')
         try:
             blog_list = paginator.page(page)

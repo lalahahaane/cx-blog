@@ -2,6 +2,7 @@
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from userprofile.models import UserProfile
+from inventory.models import Comment
 from django import template
 
 register = template.Library()
@@ -28,6 +29,16 @@ def show_avatar(value):
             avatar = newuser.picture
         return avatar.url
 
+
+@register.filter(name='replace_midline')
+def replace_midline(value):
+    '''
+    替换first_tag里的横线为空格
+    '''
+    if '-' in value:
+        value = value.replace('-', ' ')
+    return value
+
 @register.filter(name='tag_str_to_list')
 def tag_str_to_list(value):
     '''
@@ -39,6 +50,23 @@ def tag_str_to_list(value):
         if tag:
             new_value_list.append(tag)
     return new_value_list
+
+@register.filter(name='plus')
+def plus(value, arg):
+    '''
+    加法运算
+    '''
+    result = value + arg
+    return result
+
+@register.filter(name='get_comment_object_username')
+def get_comment_object_username(value):
+    '''
+    根据整数Comment.id得到所回复的 评论者昵称
+    '''
+    comment = Comment.objects.get(id=value)
+    result = comment.comment_user.user.username
+    return result
 
 @register.filter(name='get_login_redirect_url')
 def get_login_redirect_url(request):

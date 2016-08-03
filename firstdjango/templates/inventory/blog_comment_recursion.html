@@ -1,0 +1,68 @@
+{% load staticfiles %}
+{% load myfilters %}
+
+<div class="media" id='comment-list-{{ each_comment.id }}'>
+    <div class="media-left media-top">
+    	<a href="{% url 'user-profile' %}" id="comment-picture-{{ each_comment.id }}">
+    		{% if each_comment.comment_user %}
+    		<img src="{{ each_comment.comment_user.picture.url }}" alt="用户头像" width="50px" height="50px">
+    		{% else %}
+    		<img src="{% static 'myexample.jpg' %}" alt="用户头像" width="50px" height="50px">
+    		{% endif %}
+    	</a>
+    </div>
+    <div class="media-body">
+    	<h4 class="media-heading comment-heading" id="comment-username-{{ each_comment.id }}">
+    		{% if each_comment.comment_user %}
+    		<strong class="comment-username">{{ each_comment.comment_user.user.username }}</strong>
+    		<span class="comment-date" id="comment-date-{{ each_comment.id }}">&nbsp;&nbsp;{{ each_comment.comment_date }}</span>
+    		{% else %}
+    		<strong class="comment-username">游客</strong>
+    		<span class="comment-date" id="comment-date-{{ each_comment.id }}">&nbsp;&nbsp;{{ each_comment.comment_date }}</span>
+    		{% endif %}
+    	</h4><span class="pull-right replay-word" id="replay-word-{{ each_comment.id }}" data-num="{{ each_comment.id }}" data-username="{{ each_comment.comment_user.user.username }}"><br>回复</span>
+    	<div><strong class="replay-comment-username">回复&nbsp;&nbsp;{{ each_comment.comment_is_replay_or_not|get_comment_object_username }}&nbsp;&nbsp;的评论</strong></div>
+    	<p id="comment-content-{{ each_comment.id }}">
+    		{% autoescape on %}
+    		{{ each_comment.comment_content }}
+    		{% endautoescape %}
+    	</p>
+    	<div class="replay-box" id="replay-box-{{ each_comment.id }}"></div>
+    	{% if each_group_by|length > 2 %}
+            {% for each_comment in each_group_by|slice:"2:" %}
+            <!-- 评论组从 index 3 开始迭代-->
+                <hr>
+                <div class="media" id='comment-list-{{ each_comment.id }}'>
+                    <div class="media-left media-top">
+                    	<a href="{% url 'user-profile' %}" id="comment-picture-{{ each_comment.id }}">
+                    		{% if each_comment.comment_user %}
+                    		<img src="{{ each_comment.comment_user.picture.url }}" alt="用户头像" width="50px" height="50px">
+                    		{% else %}
+                    		<img src="{% static 'myexample.jpg' %}" alt="用户头像" width="50px" height="50px">
+                    		{% endif %}
+                    	</a>
+                    </div>
+                    <div class="media-body">
+                    	<h4 class="media-heading comment-heading" id="comment-username-{{ each_comment.id }}">
+                    		{% if each_comment.comment_user %}
+                    		<strong class="comment-username">{{ each_comment.comment_user.user.username }}</strong>
+                    		<span class="comment-date" id="comment-date-{{ each_comment.id }}">&nbsp;&nbsp;{{ each_comment.comment_date }}</span>
+                    		{% else %}
+                    		<strong class="comment-username">游客</strong>
+                    		<span class="comment-date" id="comment-date-{{ each_comment.id }}">&nbsp;&nbsp;{{ each_comment.comment_date }}</span>
+                    		{% endif %}
+                    	</h4><span class="pull-right replay-word" id="replay-word-{{ each_comment.id }}" data-num="{{ each_comment.id }}" data-username="{{ each_comment.comment_user.user.username }}"><br>回复</span>
+                    	<div><strong class="replay-comment-username">回复&nbsp;&nbsp;{{ each_comment.comment_is_replay_or_not|get_comment_object_username }}&nbsp;&nbsp;的评论</strong></div>
+                    	<p id="comment-content-{{ each_comment.id }}">
+                    		{% autoescape on %}
+                    		{{ each_comment.comment_content }}
+                    		{% endautoescape %}
+                    	</p>
+                    </div>
+                    <div class="replay-box" id="replay-box-{{ each_comment.id }}"></div>
+                </div>
+            <!-- 评论组一次迭代结束 -->
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>

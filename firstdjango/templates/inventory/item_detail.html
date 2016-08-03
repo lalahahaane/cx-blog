@@ -5,12 +5,13 @@
 {% block title %}{{ item.title }}{% endblock%}
 
 {% block extrahead %}
-	<link rel="stylesheet" href="{% static 'textarea-auto-height/style.css' %}">
-	<link rel="stylesheet" href="{% static 'css/item_detail.css' %}">
 
-	<!--blog 目录-->
-    <link rel="stylesheet" href="http://yandex.st/highlightjs/6.2/styles/googlecode.min.css">
-    <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+<link rel="stylesheet" href="{% static 'textarea-auto-height/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/item_detail.css' %}">
+
+<!--blog 目录-->
+<link rel="stylesheet" href="http://yandex.st/highlightjs/6.2/styles/googlecode.min.css">
+<script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
 
 {% endblock %}
 
@@ -68,13 +69,13 @@
         </div>
 		<br><hr>
 		<div class="blog-info">
-			<p class="pull-right" title="更新日期">
+			<p class="pull-right update-date" title="更新日期">
 				<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{ item.update_date }}&nbsp;&nbsp;
 			</p>
-			<p class="pull-right" title="发表日期">
+			<p class="pull-right publication-date" title="发表日期">
 				<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{ item.publication_date }}&nbsp;&nbsp;
 			</p>
-			<p class="pull-left" title="阅读人数">
+			<p class="pull-left view-number" title="阅读人数">
 				<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> {{ item.view_number }}&nbsp;&nbsp;&nbsp;&nbsp;
 			</p>
 		</div>
@@ -129,39 +130,50 @@
 
 
 <!--显示旧评论-->
+<!--显示旧评论-->
 <div class="comment-block col-md-9">
 {% if comment_list %}
-	{% for each_comment in comment_list %}
+	{% for ke,each_group_by in comment_list.items %}
+	    <!-- 每个each_group_by展开 -->
+        {% with each_comment=each_group_by.0 len_of_each_comment=each_group_by|length %}
+        	<div class="media" id='comment-list-{{ each_comment.id }}'>
+                <div class="media-left media-top">
+                	<a href="{% url 'user-profile' %}" id="comment-picture-{{ each_comment.id }}">
+                		{% if each_comment.comment_user %}
+                		<img src="{{ each_comment.comment_user.picture.url }}" alt="用户头像" width="50px" height="50px">
+                		{% else %}
+                		<img src="{% static 'myexample.jpg' %}" alt="用户头像" width="50px" height="50px">
+                		{% endif %}
+                	</a>
+                </div>
+                <div class="media-body">
+                	<h4 class="media-heading comment-heading" id="comment-username-{{ each_comment.id }}">
+                		{% if each_comment.comment_user %}
+                		<strong class="comment-username">{{ each_comment.comment_user.user.username }}</strong>
+                		<span class="comment-date" id="comment-date-{{ each_comment.id }}">&nbsp;&nbsp;{{ each_comment.comment_date }}</span>
+                		{% else %}
+                		<strong class="comment-username">游客</strong>
+                		<span class="comment-date" id="comment-date-{{ each_comment.id }}">&nbsp;&nbsp;{{ each_comment.comment_date }}</span>
+                		{% endif %}
 
-		<div class="media" id='comment-list-{{ forloop.counter }}'>
-			<div class="media-left media-top">
-				<a href="{% url 'user-profile' %}" id="comment-picture-{{ forloop.counter }}">
-					{% if each_comment.comment_user %}
-					<img src="{{ each_comment.comment_user.picture.url }}" alt="用户头像" width="50px" height="50px">
-					{% else %}
-					<img src="{% static 'myexample.jpg' %}" alt="用户头像" width="50px" height="50px">
-					{% endif %}
-				</a>
-			</div>
-			<div class="media-body">
-				<h4 class="media-heading comment-heading" id="comment-username-{{ forloop.counter }}">
-					{% if each_comment.comment_user %}
-					<strong class="comment-username">{{ each_comment.comment_user.user.username }}</strong>
-					<span class="comment-date" id="comment-date-{{ forloop.counter }}">&nbsp;&nbsp;{{ each_comment.comment_date }}</span>
-					{% else %}
-					<strong class="comment-username">游客</strong>
-					<span class="comment-date" id="comment-date-{{ forloop.counter }}">&nbsp;&nbsp;{{ each_comment.comment_date }}</span>
-					{% endif %}
-					<strong class="pull-right" id="comment-num-{{ forloop.counter }}">{{ forloop.counter }}楼 </strong>
-				</h4><span class="pull-right replay-word" id="replay-word-{{ forloop.counter }}" data-num="{{ forloop.counter }}" data-username="{{ each_comment.comment_user.user.username }}"><br>回复</span>
-				<p id="comment-content-{{ forloop.counter }}">
-					{% autoescape on %}
-					{{ each_comment.comment_content }}
-					{% endautoescape %}
-				</p>
-			</div><div class="replay-box" id="replay-box-{{ forloop.counter }}"></div><hr>
-		</div>
-
+                	</h4><span class="pull-right replay-word" id="replay-word-{{ each_comment.id }}" data-num="{{ each_comment.id }}" data-username="{{ each_comment.comment_user.user.username }}"><br>回复</span>
+                	<p id="comment-content-{{ each_comment.id }}">
+                		{% autoescape on %}
+                		{{ each_comment.comment_content }}
+                		{% endautoescape %}
+                	</p>
+                	{% if len_of_each_comment > 1 %}
+                        <br>
+                	    <div class="replay-box" id="replay-box-{{ each_comment.id }}"></div><hr>
+                        {% include "inventory/blog_comment_recursion.html" with each_comment=each_group_by.1 %}
+                    {% endif %}
+                </div>
+                {% if len_of_each_comment < 2 %}
+                <div class="replay-box" id="replay-box-{{ each_comment.id }}"></div><hr>
+                {% endif %}
+            </div>
+        {% endwith %}
+        <!-- with 结束 -->
 	{% endfor %}
 {% endif %}
 </div>
@@ -213,13 +225,10 @@
 
 	//点击回复
 	$(".replay-word").click(function(e){
-		var username = $(this).attr("data-username");
 		var id = $(this).attr("data-num");
-		var head = "回复"+id+"楼 @"+username+"\n";
 
 		$("#replay-box-"+id).prepend($(".comment-input"))
 		$("#comment-content-new-get").focus();
-		$("#comment-content-new-get").val(head);
 	});
 	$(".replay-word").mouseover(function(){
 		$(this).css("color", "black");
@@ -243,7 +252,9 @@
 					type: "POST",
 					url: "{% url 'comment' id=item.id %}",/* "window.location.href+"comment/"{% url 'comment' id=item.id %}" */
 					dataType: "json",
-					data: { "comment-get": $(".comment-content-new-get").val() },
+					data: { "comment-get": $(".comment-content-new-get").val()
+					 		"is_replay_or_not": is_replay_or_not
+					 },
 
 					success: function(data){
 						console.log('发送成功');

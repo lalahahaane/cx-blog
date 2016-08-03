@@ -107,19 +107,33 @@ class BlogPublishView(AdminRequiredMixin, FormView):
         success_url = reverse('item_detail', args=(blog_new.id,))
         return success_url
 
-def item_detail(request, id):
+class BlogDetailView(DetailView):
     '''
     文章详细内容
     '''
-    try:
-        item = Blogitem.objects.get(id=id)
-        item.view_number = item.view_number + 1
-        item.save()
-        comment_list  = Comment.objects.filter(comment_blog_id=item.id).order_by(F('comment_date').asc())
-    except Blogitem.DoesNotExist:
-        raise Http404(u"文章不存在，您无法访问！")
-    return render_to_response( 'inventory/item_detail.html', {'item': item,'comment_list': comment_list}, context_instance=RequestContext(request))
+    model = Blogitem
+    template_name = 'inventory/item_detail.html'
+    slug_field = 'pk'
 
+    def get_context_data(self, **kwargs):
+        context = super(BlogDetailView, self).get_context_data(**kwargs)
+        pk = self.kwargs.get('pk')
+        try:
+            item = Blogitem.objects.get(id=pk)
+            item.view_number = item.view_number + 1
+            item.save()
+            comment_of_a_blog  = Comment.objects.filter(comment_blog_id=pk)
+            keys = set([i.comment_group_by for i in comment_of_a_blog])
+            ke = list(keys)
+            result = {}
+            for each_key in ke:
+                result[str(each_key)] = list(Comment.objects.filter(comment_group_by=int(each_key)).order_by('id'))
+            context['item'] = item
+            context['comment_list'] = result
+        except Blogitem.DoesNotExist:
+            raise Http404(u"文章不存在，您无法访问！")
+
+        return context
 
 class BlogEditView(AdminRequiredMixin, FormView):
     '''
@@ -166,14 +180,17 @@ class BlogEditView(AdminRequiredMixin, FormView):
         success_url = reverse('item_detail', args=(id,))
         return success_url
 
-def commentreq(request, id):
+def commentreq(request, pk):
     '''
     评论系统
     '''
-
     if request.is_ajax() and request.POST:
         #获取评论
         comment_content = request.POST.get('comment-get')
+        #处理评论
+        comment_co = comment_content.strip()
+        #获取判断：是否是某条评论的回复。如果是，则返回replay-box-{{ id }},id为所回复的评论的Comment.id .如果不是，则返回"0"
+        is_replay_or_not = request.POST.get('is_replay_or_not')
         #获取当前用户
         comment_user = request.user
         now = datetime.now()
@@ -181,21 +198,27 @@ def commentreq(request, id):
         if not comment_user.is_authenticated():
             return HttpResponse(json.dumps({'status': u'请登录后评论！'}), content_type='application/json')
 
-        if len(comment_content)>4:
+        if len(comment_co)>4:
             usercomment = Comment()
-            usercomment.comment_user=UserProfile.objects.get(user=request.user)
-            usercomment.comment_content=comment_content
-            usercomment.comment_blog=Blogitem.objects.get(id=id)
+            usercomment.comment_user = UserProfile.objects.get(user=request.user)
+            usercomment.comment_content=comment_co
+            usercomment.comment_blog=Blogitem.objects.get(id=pk)
             usercomment.comment_date = now
+            usercomment.save()
+            if '-' in is_replay_or_not:
+                up_id = int(is_replay_or_not.split('-')[-1])
+                usercomment.comment_group_by = Comment.objects.get(id=up_id).comment_group_by # 与所回复的评论的groupby一样
+                usercomment.comment_is_replay_or_not = up_id # 所回复评论的id，同一个 groupby中可能有至少三个人评论，确定回复的具体人员
+            else:
+                usercomment.comment_group_by = usercomment.id
             usercomment.save()
             t = get_template('inventory/blog_comment_test.html')
             html = t.render(Context({'usercomment': usercomment}))
-            return HttpResponse(json.dumps({'status':u'评论提交成功！','html': html}), content_type='application/json')
+            return HttpResponse(json.dumps({'status':is_replay_or_not + u'评论提交成功！','html': html}), content_type='application/json')
         else:
             return HttpResponse(json.dumps({'status':u'多说几句吧！'}), content_type='application/json')
     else:
         return HttpResponse(json.dumps({'status': u'评论提交有误！'}), content_type='application/json')
-
 
 def About(request):
     return render(request,'inventory/about.html')
@@ -251,7 +274,6 @@ class BlogSitemap(Sitemap):
 
     def location(self, item):
         return reverse(item)
-
 
 
 

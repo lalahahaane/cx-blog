@@ -6,9 +6,6 @@ from django.conf import settings
 from inventory import views
 
 
-
-
-
 context = dict(
     plus_id=getattr(settings, 'SOCIAL_AUTH_GOOGLE_PLUS_KEY', None),
     plus_scope=' '.join(GooglePlusAuth.DEFAULT_SCOPE),
@@ -17,7 +14,7 @@ context = dict(
 
 urlpatterns = [
     # url以blog/开头
-    url(r'^(?P<id>(\d+))/$',views.item_detail , name='item_detail'),
+    url(r'^(?P<pk>(\d+))/$',views.BlogDetailView.as_view() , name='item_detail'),
     url(r'^publish/$', views.BlogPublishView.as_view(), name='item_publish'),
     url(r'^search/$', views.BlogSearchView.as_view(), name='item_search'),
     url(r'^(?P<tag>([a-zA-Z\-&]+))/$',views.CategoriesListView.as_view() , name='item_categories'),

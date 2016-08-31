@@ -1,29 +1,26 @@
-from .forms import RegisterUserForm,RegisterProfileForm, ChangepwdForm, ForgetpwdForm, LoginForm, ChangeusernameForm
-from django.contrib.auth import authenticate, logout
+from urllib.request import urlretrieve
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from sorl.thumbnail import delete
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, render_to_response, redirect
 from django.views.generic import TemplateView
 from django.contrib.auth.models import User
-from .models import UserProfile
 from django.conf import settings
-from django.http import HttpResponse
-from django.shortcuts import redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from .models import UserProfile
+from .forms import RegisterUserForm, RegisterProfileForm, ChangepwdForm, ForgetpwdForm, LoginForm, ChangeusernameForm
 from social.backends.google import GooglePlusAuth
 from social.backends.utils import load_backends
 from userprofile.decorators import render_to
 import requests
 import urllib.parse
-import json
 import copy
+import time
 import re
 import uuid
-
+import json
 
 def register(request):
     '''
@@ -318,22 +315,25 @@ def qq_get_user_info(request, access_token, openid):
     username = dat['nickname']
     email = '%s@qq.com'% openid
     password = access_token
-    uuu = UserProfile.objects.filter(picture__icontains=username)
-    if uuu:
-        usp = uuu[0]
-    else:
-        if User.objects.get(username=username):
-            usp = User.objects.get(username=username)
-        else:
-            usp = User.objects.create_user(username, email, password)                    #创建用户
+    uuu = User.objects.filter(username=username)
+    if uuu:  # 如果此人过去登录过
+        usr = uuu[0]
+        usr.set_password(password)
+        usr.save() # 更新 access_token
+        user = authenticate(username=username, password=password)
+    else: # 如果此人过去没有登录过
+        usp = User.objects.create_user(username, email, password)                    #创建用户
         picture_url = dat['figureurl_2'] #100*100头像的url
         location = settings.MEDIA_ROOT
-        pic_address = "%s%s##%s.jpg"% (location, username, openid)
+        pic_address = "%s/%s##%s.jpg"% (location, username, openid)
+        urlretrieve(picture_url, pic_address)   #下载头像
         uspr = UserProfile()
+
         uspr.download_image_save(picture_url, pic_address, usp)
 
     user = authenticate(username=username, password=password)
     login(request, user)
+
 
 
 def QQ_login_complete(request):
